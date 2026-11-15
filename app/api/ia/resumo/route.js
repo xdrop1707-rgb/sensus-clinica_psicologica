@@ -1,3 +1,4 @@
+// Integração IA e Segurança desenvolvidas por Denis
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
