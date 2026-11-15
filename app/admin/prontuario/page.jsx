@@ -131,7 +131,6 @@ function ConteudoProntuario() {
       mostrarMensagem("Erro ao salvar no banco: " + resultado.error);
     } else {
       mostrarMensagem("Prontuário salvo com sucesso!");
-
       const { data: historicoAtualizado } = await supabase
         .from("prontuarios")
         .select("data_anotacao, humor_predominante")
