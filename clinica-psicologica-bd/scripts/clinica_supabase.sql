@@ -2270,4 +2270,4 @@ CREATE POLICY "Cliente ve sua propria triagem" ON public.triagens
             WHERE c.id = id_cliente
             AND u.auth_user_id = auth.uid()
         )
-    );
+    );-- Desenvolvido por Miguel
