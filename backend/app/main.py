@@ -1,4 +1,4 @@
-# API desenvolvida por Clayton e Lucas
+# API desenvolvida por Lucas e Clayton
 
 import os
 from fastapi import FastAPI, Depends
