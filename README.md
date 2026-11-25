@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sensus IA (Gemini + Supabase pgvector)
 
-## Getting Started
+Assistente RAG que só responde sobre o Sensus.
 
-First, run the development server:
+## Como funciona
+1. Pergunta validada (tamanho, tags do prompt higienizadas).
+2. Detecção de crise (CVV 188 / SAMU 192) e saudação, sem LLM.
+3. Embedding da pergunta (Gemini) e busca semântica no Supabase (`buscar_conhecimento`).
+4. Nenhum trecho acima do limiar: recusa fixa, sem chamar o LLM.
+5. Com trechos: Gemini responde só com base neles, seguindo o system prompt.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Instalação
+1. Supabase, SQL Editor: rode `sql/001_ia_conhecimento.sql`.
+2. `pip install -r requirements-ia.txt`
+3. Copie as variáveis de `.env.ia.example` para o seu `.env` (pegue a chave em https://aistudio.google.com/apikey).
+4. Coloque o conteúdo real do Sensus em `dados/conhecimento/` (.md, .txt ou .pdf).
+5. `python -m ia.ingestao`
+6. Teste: `python -m ia.cli --debug` e ajuste `RAG_MIN_SIMILARITY`.
+
+## Integração na API (main.py)
+```python
+from ia.router import criar_router
+from app.suas_dependencias import obter_usuario_atual  # a dependência de auth que você já tem
+
+app.include_router(criar_router(obter_usuario_atual))
 ```
+Endpoint: `POST /ia/chat` com `{"pergunta": "...", "historico": [{"papel": "user|model", "texto": "..."}]}`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Testes
+`pytest tests` (usa mocks, não chama Gemini nem Supabase).
